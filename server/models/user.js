@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 var UserSchema = new mongoose.Schema({
   email: {
@@ -70,6 +71,22 @@ UserSchema.statics.findByToken = function(token) {
     'tokens.access': 'auth'
   });
 };
+//dogadjaj koji ce da se izvrsi pre 'save' dogadjaja
+//zovemo f-ju sa next arg, da nemamo metoda se ne bi zavrsila => program pada
+//
+UserSchema.pre('save', function(next){
+  var user = this; //pristupamo individualnom dokumentu(koloni)
+  if(user.isModified('password')){   //proveravamo da li je sifra modifikovana, prima pr. pass i vraca T/F
+    bcrypt.genSalt(10, (err, salt) => { //generisemo salt (dodaje se na sifru)
+      bcrypt.hash(user.password, salt, (err, hash) => { //uzimamo pass, dodajemo salt i hesiramo
+        user.password = hash; //stavljamo hesiranu vrednost
+        next(); //zavrsavamo metodu
+      });
+    });
+  }else{
+    next();
+  }
+});
 
 var User = mongoose.model('User', UserSchema);
 

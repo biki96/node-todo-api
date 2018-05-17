@@ -8,7 +8,7 @@ const{ObjectID} = require('mongodb');
 var{mongoose} = require('./db/mongoose');
 var{User} = require('./models/user');
 var{Todo} = require('./models/todo');
-var{authenticate} = require('./middleware/authenticate');
+var{authenticate} = require('./middleware/authenticate'); 
 
 var app = express();
 // var port = process.env.PORT || 3000;
